@@ -18,9 +18,7 @@ CREATE TABLE IF NOT EXISTS telemetry_events (
     engine_temp FLOAT NOT NULL,
     timestamp TIMESTAMP NOT NULL,
     flagged BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    INDEX idx_device_id (device_id),
-    INDEX idx_timestamp (timestamp)
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Create devices table
@@ -45,10 +43,10 @@ async def init_db():
     try:
         conn = await asyncpg.connect(DATABASE_URL)
         logger.info("✓ Connected to PostgreSQL")
-        
+
         await conn.execute(CREATE_TABLES_SQL)
         logger.info("✓ Tables created successfully")
-        
+
         await conn.close()
         logger.info("✓ Database initialization complete")
         return True
