@@ -1,4 +1,4 @@
-.PHONY: help install run dev clean docker-up docker-down docker-logs init-db
+.PHONY: help install run dev clean docker-up docker-down docker-logs init-db worker
 
 help:
 	@echo "StreamPulse Makefile commands:"
@@ -13,8 +13,9 @@ help:
 	@echo "  make docker-logs - View Docker logs"
 	@echo ""
 	@echo "Running:"
-	@echo "  make run       - Run FastAPI server (production mode)"
 	@echo "  make dev       - Run FastAPI server (development mode with auto-reload)"
+	@echo "  make run       - Run FastAPI server (production mode)"
+	@echo "  make worker    - Run Worker (reads Redis, saves to PostgreSQL)"
 	@echo ""
 	@echo "Cleanup:"
 	@echo "  make clean     - Remove Python cache files"
@@ -36,11 +37,14 @@ docker-logs:
 init-db:
 	.venv/Scripts/python.exe init_db.py
 
+dev:
+	uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
 run:
 	uvicorn main:app --host 0.0.0.0 --port 8000
 
-dev:
-	uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+worker:
+	.venv/Scripts/python.exe worker.py
 
 clean:
 	find . -type f -name "*.pyc" -delete

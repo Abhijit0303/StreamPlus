@@ -21,12 +21,12 @@ async def insert_telemetry_event(
     pool = get_db_pool()
     if pool is None:
         raise Exception("Database pool not initialized")
-    
+
     try:
         async with pool.acquire() as conn:
             event_id = await conn.fetchval(
                 """
-                INSERT INTO telemetry_events 
+                INSERT INTO telemetry_events
                 (device_id, speed, latitude, longitude, engine_temp, timestamp, flagged)
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
                 RETURNING id
@@ -49,7 +49,7 @@ async def upsert_device(device_id: str) -> int:
     pool = get_db_pool()
     if pool is None:
         raise Exception("Database pool not initialized")
-    
+
     try:
         async with pool.acquire() as conn:
             device_row = await conn.fetchrow(
@@ -57,9 +57,9 @@ async def upsert_device(device_id: str) -> int:
                 INSERT INTO devices (device_id, last_seen, total_events)
                 VALUES ($1, NOW(), 1)
                 ON CONFLICT (device_id)
-                DO UPDATE SET 
+                DO UPDATE SET
                     last_seen = NOW(),
-                    total_events = total_events + 1
+                    total_events = devices.total_events + 1
                 RETURNING id
                 """,
                 device_id
