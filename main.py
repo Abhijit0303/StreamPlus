@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from routers import ingest, analytics
+from routers import ingest, analytics, devices
 from services import redis_stream
 from db import connection as db
 from config import APP_HOST, APP_PORT, LOG_LEVEL
@@ -30,6 +30,7 @@ app = FastAPI(
 
 app.include_router(ingest.router)
 app.include_router(analytics.router)
+app.include_router(devices.router)
 
 
 @app.get("/health")
